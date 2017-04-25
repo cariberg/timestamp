@@ -5,21 +5,23 @@ var natural
 var unix
 
 app.get('/',function(req,res) {
-    res.send('Timestamp Microservice:' + '\n' 
-    + 'Pass a parameter. If it contains a unix or natural date, the app will return formatted date information.' + '\n'
-    + 'Example: https://fcc-timestamp-cariberg.c9users.io/December 1 2012')
+    res.send('Timestamp Microservice: Pass a parameter. If it contains a unix or natural date, the app will return formatted date information. Example: https://fcc-timestamp-cariberg.c9users.io/December 1 2012')
 })
 
 app.get('/:timestamp', function (req, res) {
     var raw = req.params.timestamp
-    if (moment(raw).isValid) {
-        natural = moment(raw).format('MMM D YYYY')
-        unix = moment(raw).format('x')
+    var realDate = Date.parse(raw.match(/[a-zA-Z]+|[0-9]+/g).join(" "))
+    var uniStart = raw.search(/\d/)
+    var uniInt = parseInt(raw.substr(uniStart,raw.length))
+    console.log(uniInt)
+    if (!isNaN(realDate)) {
+        natural = moment.utc(realDate).format('MMM D YYYY')
+        unix = moment.utc(realDate).format('x')
     }
-    /*else if(moment.unix(parseInt(raw)).isValid) {
-        natural = moment.unix(parseInt(raw)).format('MMM D YYYY')
-        unix = moment.unix(parseInt(raw)).format('x')
-    }*/
+    else if (!isNaN(uniInt)) {
+        natural = moment.unix(uniInt).format('MMM D YYYY')
+        unix = moment.unix(uniInt).format('x')
+    }
     else {
         natural = null
         unix = null
